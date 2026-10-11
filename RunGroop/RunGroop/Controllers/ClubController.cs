@@ -1,0 +1,31 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RunGroop.Data;
+using RunGroop.Models;
+
+namespace RunGroop.Controllers
+{
+    public class ClubController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+
+        public ClubController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        public IActionResult Index()
+        {
+            List<Club> clubs =  _context.Clubs.ToList();
+            return View(clubs);
+        }
+
+        public IActionResult ClubDetails(int id)
+        {
+            Club? club = _context.Clubs
+                .Include(club => club.Address)
+                .FirstOrDefault(c => c.Id == id);
+            return club == null ? NotFound() : View(club);
+        }
+
+    }
+}

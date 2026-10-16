@@ -12,6 +12,8 @@ namespace RunGroop.Models
         public string Description { get; set; }
         public string? Image { get; set; }
         public DateTime? StartTime { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Value must be positive.")]
         public int? EntryFee { get; set; }
         public string? Website { get; set; }
         public string? Twitter { get; set; }

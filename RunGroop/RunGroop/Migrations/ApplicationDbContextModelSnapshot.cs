@@ -44,7 +44,7 @@ namespace RunGroop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("RunGroop.Models.AppUser", b =>
@@ -65,7 +65,7 @@ namespace RunGroop.Migrations
 
                     b.HasIndex("AddressId");
 
-                    b.ToTable("AppUser");
+                    b.ToTable("AppUser", (string)null);
                 });
 
             modelBuilder.Entity("RunGroop.Models.Club", b =>
@@ -100,7 +100,7 @@ namespace RunGroop.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Clubs");
+                    b.ToTable("Clubs", (string)null);
                 });
 
             modelBuilder.Entity("RunGroop.Models.Race", b =>
@@ -155,7 +155,7 @@ namespace RunGroop.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.ToTable("Races");
+                    b.ToTable("Races", (string)null);
                 });
 
             modelBuilder.Entity("RunGroop.Models.AppUser", b =>

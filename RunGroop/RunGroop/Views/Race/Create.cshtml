@@ -1,11 +1,12 @@
 ﻿@using RunGroop.Data.Enum
-@model Race
+@using RunGroop.ViewModels
+@model CreateRaceViewModel
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
-<form method="post" asp-action="Create">
+<form asp-controller="Race" asp-action="Create" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="Title">Title</label>
         <input asp-for="Title" class="form-control" placeholder="Title">
@@ -19,21 +20,9 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="StartTime">StartTime</label>
-        <input asp-for="StartTime" class="form-control" placeholder="StartTime">
-        <span asp-validation-for="StartTime" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="EntryFee">EntryFee</label>
-        <input asp-for="EntryFee" class="form-control" placeholder="EntryFee">
-        <span asp-validation-for="EntryFee" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Website">Website</label>
-        <input asp-for="Website" class="form-control" placeholder="WebSite">
-        <span asp-validation-for="Website" class="text-danger"></span>
+        <label asp-for="Image">Image</label>
+        <input asp-for="Image" type="file" class="form-control">
+        <span asp-validation-for="Image" class="text-danger"></span>
     </div>
 
     <div class="form-group">

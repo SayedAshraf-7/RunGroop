@@ -4,6 +4,8 @@ using RunGroop.Data;
 using RunGroop.Interfaces;
 using RunGroop.Models;
 using RunGroop.Repository;
+using RunGroop.ViewModels;
+using RunGroopWebApp.Interfaces;
 
 namespace RunGroop.Controllers
 {
@@ -11,10 +13,12 @@ namespace RunGroop.Controllers
     {
 
         private readonly IClubRepository _clubRepository;
+        private readonly IPhotoService _photoService;
 
-        public ClubController(IClubRepository clubRepository)
+        public ClubController(IClubRepository clubRepository , IPhotoService PhotoService)
         {
             _clubRepository = clubRepository;
+            _photoService = PhotoService;
         }
         public async Task<IActionResult> Index()
         {
@@ -32,14 +36,38 @@ namespace RunGroop.Controllers
             return View();
         }
 
+
         [HttpPost]
-        public async Task<IActionResult> Create(Club club)
+        public async Task<IActionResult> Create(CreateClubViewModel clubVM)
         {
             if (!ModelState.IsValid)
-                return View(club);
+                return View(clubVM);
+
+            var result = await _photoService.AddPhotoAsync(clubVM.Image);
+
+            if (result.Error != null)
+            {
+                ModelState.AddModelError(nameof(clubVM.Image), "Photo upload failed. Please try again.");
+                return View(clubVM);
+            }
+
+            var club = new Club
+            {
+                Title = clubVM.Title,
+                Description = clubVM.Description,
+                Image = result.Url.ToString(),
+                Address = new Address
+                {
+                    Street = clubVM.Address.Street,
+                    City = clubVM.Address.City,
+                    State = clubVM.Address.State
+                }
+            };
             _clubRepository.AddClub(club);
             return RedirectToAction("Index");
         }
+
+        
 
 
 

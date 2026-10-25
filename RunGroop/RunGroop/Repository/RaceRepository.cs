@@ -31,6 +31,11 @@ namespace RunGroop.Repository
             return await _context.Races.ToListAsync();
         }
 
+        public async Task<Race> GetByIdAsyncNoTracking(int id)
+        {
+            return await _context.Races.AsNoTracking().FirstOrDefaultAsync(Race => Race.Id == id);
+        }
+
         public async Task<Race> GetRaceByIdAsnc(int id)
         {
             return await _context.Races.FirstOrDefaultAsync(Race => Race.Id == id);

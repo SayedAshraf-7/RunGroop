@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RunGroop.Data;
 using RunGroop.Interfaces;
 using RunGroop.Models;
-using RunGroop.Repository;
 using RunGroop.ViewModels;
 using RunGroopWebApp.Interfaces;
-
 namespace RunGroop.Controllers
 {
     public class RaceController : Controller
@@ -64,6 +61,73 @@ namespace RunGroop.Controllers
             _raceRepository.AddRace(club);
             return RedirectToAction("Index");
         }
+        
+        
+        
+        public async Task<IActionResult> Edit(int id)
+        {
+            var Race = await _raceRepository.GetRaceByIdAsnc(id);
+            var clubVM = new EditRaceViewModel
+            {
+                Id = Race.Id,
+                Title = Race.Title,
+                Description = Race.Description,
+                AddressId = Race.AddressId,
+                Address = Race.Address,
+                URL = Race.Image,
+                RaceCategory = Race.RaceCategory
+            };
+            return View(clubVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditRaceViewModel RaceVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit club");
+                return View(RaceVM);
+            }
+
+            var userRace = await _raceRepository.GetByIdAsyncNoTracking(id);
+            if (userRace == null) return NotFound();
+
+            string imageUrl = userRace.Image;   // keep the old image by default
+
+            // Only touch the photo if the user picked a new file
+            if (RaceVM.Image != null)
+            {
+                var photoResult = await _photoService.AddPhotoAsync(RaceVM.Image);
+                if (photoResult.Error != null)
+                {
+                    ModelState.AddModelError("Image", "Photo upload failed");
+                    return View(RaceVM);
+                }
+
+                if (!string.IsNullOrEmpty(userRace.Image))
+                {
+                    try { await _photoService.DeletePhotoAsync(userRace.Image); }
+                    catch { /* old photo cleanup failed, don't block the edit */ }
+                }
+
+                imageUrl = photoResult.Url.ToString();
+            }
+
+            var race = new Race
+            {
+                Id = id,                       // use the route id, not clubVM.Id
+                Title = RaceVM.Title,
+                Description = RaceVM.Description,
+                RaceCategory = RaceVM.RaceCategory,
+                Image = imageUrl,
+                AddressId = RaceVM.AddressId,
+                Address = RaceVM.Address
+            };
+
+            _raceRepository.UpdateClub(race);
+            return RedirectToAction("Index");
+        }
+
 
     }
 }

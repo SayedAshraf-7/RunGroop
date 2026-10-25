@@ -11,5 +11,6 @@ namespace RunGroop.Interfaces
         bool UpdateClub(Race club);
         bool DeleteClub(Race club);
         bool Save();
+        Task<Race> GetByIdAsyncNoTracking(int id);
     }
 }

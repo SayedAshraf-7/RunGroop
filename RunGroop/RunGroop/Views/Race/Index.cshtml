@@ -25,9 +25,14 @@
                                     <a asp-controller="Race"
                                             asp-action="RaceDetails"
                                             asp-route-id="@Race.Id" type="button" class="btn btn-sm btn-outline-secondary">
-                                        View
+										View
+									</a>
+
+                                    <a asp-controller="Race"
+                                       asp-action="Edit"
+                                       asp-route-id="@Race.Id" type="button" class="btn btn-sm btn-outline-secondary">
+                                        Edit
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
                                 </div>
                                 <small class="text-muted">@Race.RaceCategory</small>
                             </div>

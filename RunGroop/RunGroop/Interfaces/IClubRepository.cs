@@ -15,6 +15,7 @@ namespace RunGroop.Interfaces
 
         Task<IEnumerable<Club>> GetClubsByCity(string City);
 
+        Task<Club> GetByIdAsyncNoTracking(int id);
         bool AddClub(Club club);
         bool UpdateClub(Club club);
         bool DeleteClub(Club club);

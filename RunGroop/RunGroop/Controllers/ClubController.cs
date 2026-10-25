@@ -37,39 +37,72 @@ namespace RunGroop.Controllers
         }
 
 
+        [HttpGet]
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var club = await _clubRepository.GetClubByIdAsnc(id);
+            var clubVM = new EditCubViewModel
+            {
+                Id = club.Id,
+                Title = club.Title,
+                Description = club.Description,
+                AddressId = club.AddressId,
+                Address = club.Address,
+                URL = club.Image,
+                Category = club.ClubCategory
+            };
+            return View(clubVM);
+        }
+
+
         [HttpPost]
-        public async Task<IActionResult> Create(CreateClubViewModel clubVM)
+        public async Task<IActionResult> Edit(int id, EditCubViewModel clubVM)
         {
             if (!ModelState.IsValid)
-                return View(clubVM);
-
-            var result = await _photoService.AddPhotoAsync(clubVM.Image);
-
-            if (result.Error != null)
             {
-                ModelState.AddModelError(nameof(clubVM.Image), "Photo upload failed. Please try again.");
+                ModelState.AddModelError("", "Failed to edit club");
                 return View(clubVM);
+            }
+
+            var userClub = await _clubRepository.GetByIdAsyncNoTracking(id);
+            if (userClub == null) return NotFound();
+
+            string imageUrl = userClub.Image;   // keep the old image by default
+
+            // Only touch the photo if the user picked a new file
+            if (clubVM.Image != null)
+            {
+                var photoResult = await _photoService.AddPhotoAsync(clubVM.Image);
+                if (photoResult.Error != null)
+                {
+                    ModelState.AddModelError("Image", "Photo upload failed");
+                    return View(clubVM);
+                }
+
+                if (!string.IsNullOrEmpty(userClub.Image))
+                {
+                    try { await _photoService.DeletePhotoAsync(userClub.Image); }
+                    catch { /* old photo cleanup failed, don't block the edit */ }
+                }
+
+                imageUrl = photoResult.Url.ToString();
             }
 
             var club = new Club
             {
+                Id = id,                       // use the route id, not clubVM.Id
                 Title = clubVM.Title,
                 Description = clubVM.Description,
-                Image = result.Url.ToString(),
-                Address = new Address
-                {
-                    Street = clubVM.Address.Street,
-                    City = clubVM.Address.City,
-                    State = clubVM.Address.State
-                }
+                ClubCategory = clubVM.Category,
+                Image = imageUrl,
+                AddressId = clubVM.AddressId,
+                Address = clubVM.Address
             };
-            _clubRepository.AddClub(club);
+
+            _clubRepository.UpdateClub(club);
             return RedirectToAction("Index");
         }
-
-        
-
-
 
     }
 }

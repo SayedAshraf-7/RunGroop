@@ -3,10 +3,11 @@ using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Options;
 using RunGroop.Helpers;
 using RunGroop.Interfaces;
+using RunGroopWebApp.Interfaces;
 
 namespace RunGroopWebApp.Services
 {
-    public class PhotoService : Interfaces.IPhotoService
+    public class PhotoService : IPhotoService
     {
         private readonly Cloudinary _cloundinary;
 
@@ -36,8 +37,9 @@ namespace RunGroopWebApp.Services
             return uploadResult;
         }
 
-        public async Task<DeletionResult> DeletePhotoAsync(string publicId)
+        public async Task<DeletionResult> DeletePhotoAsync(string? publicUrl)
         {
+            var publicId = publicUrl.Split('/').Last().Split('.')[0];
             var deleteParams = new DeletionParams(publicId);
             return await _cloundinary.DestroyAsync(deleteParams);
         }
